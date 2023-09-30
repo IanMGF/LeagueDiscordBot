@@ -2,7 +2,7 @@ from discord.ext.commands import Bot, Context
 from discord import Intents
 
 import league_api
-import discord_token
+import tokens
 from discord_display import SummonerDiscordDisplay
 
 intents = Intents.default()
@@ -17,4 +17,6 @@ async def show_user_data(ctx: Context, username: str):
     discord_summ = SummonerDiscordDisplay(summ)
     await discord_summ.display(ctx)
 
-discord_token.connect_token(bot)
+tokens.init_tokens()
+
+bot.run(tokens.DISCORD_TOKEN)

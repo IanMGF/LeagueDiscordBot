@@ -3,11 +3,15 @@ Interface to pull data with the League of Legends API
 """
 
 from datetime import datetime, timedelta
+from typing import Union
+
 import requests
+
+import tokens
 
 # Contains a list of pairs of Summoner objects, generated from the pulled data, and the time of cache
 CACHE = {}  # type: dict[str, CachedSummonerWrapper]
-CACHE_LIFETIME = 30  # Lifetime, in seconds, of cached items
+CACHE_LIFETIME = 60  # Lifetime, in seconds, of cached items
 
 
 class Summoner:
@@ -28,18 +32,18 @@ class CachedSummonerWrapper:
         self.cache_expiration_time = cache_expiration_time
 
     def is_valid(self) -> bool:
-        return self.cache_expiration_time < datetime.now()
+        return self.cache_expiration_time > datetime.now()
 
 
 def pull_summoner(summoner_name: str) -> Summoner:
     # This is the only point Cache is ever altered, therefore, it is the only time in which it needs to be sanitized
     update_cache()
-    if summoner_name in CACHE:
+
+    if summoner_name in CACHE.keys():
         return CACHE[summoner_name].summoner
-    else:
+    if summoner_name not in CACHE.keys():
         # summoner_data = None  # type: Summoner
-        resp = requests.get(f"https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}",
-                            headers={'X-Riot-Token': "SECRET_RIOT_KEY"})  # TODO: Implement Key // Change discord_token.py to tokens.py and include Riot Token
+        resp = requests.get(f"https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}", headers={'X-Riot-Token': tokens.RIOT_TOKEN})
 
         # TODO: Check Status Code
         summoner_data = resp.json()
@@ -57,6 +61,13 @@ def pull_summoner(summoner_name: str) -> Summoner:
         expiration_time = datetime.now() + timedelta(seconds=CACHE_LIFETIME)
         CACHE[summoner_name] = CachedSummonerWrapper(summoner, expiration_time)
         return summoner
+
+
+def get_cache_origin(summoner_name: str) -> Union[None, datetime]:
+    if summoner_name not in CACHE:
+        return datetime.now()
+
+    return CACHE[summoner_name].cache_expiration_time
 
 
 def update_cache() -> None:

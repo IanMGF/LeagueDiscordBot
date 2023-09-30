@@ -14,8 +14,13 @@ bot = Bot('!', intents=intents)
 @bot.command('user')
 async def show_user_data(ctx: Context, username: str):
     summ = league_api.pull_summoner(username)
-    discord_summ = SummonerDiscordDisplay(summ)
-    await discord_summ.display(ctx)
+
+    if summ is None:
+        await ctx.send(f"Houve um erro ao tentar acessar os dados de {username} :(")
+
+    else:
+        discord_summ = SummonerDiscordDisplay(summ)
+        await discord_summ.display(ctx)
 
 tokens.init_tokens()
 

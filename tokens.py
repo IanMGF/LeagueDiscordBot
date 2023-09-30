@@ -15,6 +15,8 @@ import discord
 DISCORD_TOKEN = ""
 RIOT_TOKEN = ""
 
+RIOT_API_BASE = "https://br1.api.riotgames.com"
+
 
 def init_tokens():
     with open('TOKENS.txt', 'r') as token_file:

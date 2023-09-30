@@ -3,6 +3,7 @@ Interface to pull data with the League of Legends API
 """
 
 from datetime import datetime, timedelta
+import requests
 
 # Contains a list of pairs of Summoner objects, generated from the pulled data, and the time of cache
 CACHE = {}  # type: dict[str, CachedSummonerWrapper]
@@ -36,10 +37,26 @@ def pull_summoner(summoner_name: str) -> Summoner:
     if summoner_name in CACHE:
         return CACHE[summoner_name].summoner
     else:
-        summoner_data = None  # type: Summoner  # TODO: Implement with League API
+        # summoner_data = None  # type: Summoner
+        resp = requests.get(f"https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}",
+                            headers={'X-Riot-Token': "SECRET_RIOT_KEY"})  # TODO: Implement Key // Change discord_token.py to tokens.py and include Riot Token
+
+        # TODO: Check Status Code
+        summoner_data = resp.json()
+
+        summoner = Summoner(
+            name=summoner_data['name'],
+            account_id=summoner_data['accountId'],
+            profile_icon_id=summoner_data['profileIconId'],
+            revision_date=summoner_data['revisionDate'],
+            summoner_id=summoner_data['id'],
+            encrypted_puuid=summoner_data['puuid'],
+            summoner_level=summoner_data['summonerLevel']
+        )
+
         expiration_time = datetime.now() + timedelta(seconds=CACHE_LIFETIME)
-        CACHE[summoner_name] = CachedSummonerWrapper(summoner_data, expiration_time)
-        return summoner_data
+        CACHE[summoner_name] = CachedSummonerWrapper(summoner, expiration_time)
+        return summoner
 
 
 def update_cache() -> None:

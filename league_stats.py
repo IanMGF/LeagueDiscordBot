@@ -1,3 +1,4 @@
+import concurrent
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Tuple, Dict
 
@@ -30,19 +31,29 @@ def request_match(tup):
 class Stats:
     def __init__(self, summoner: Summoner):
         self.summoner = summoner
-        self.queues = self._get_queues()
-        self.mastery = self._get_top_mastery()
-        self.hist = self._get_match_hist()
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_queues = executor.submit(self._get_queues)
+            future_mastery = executor.submit(self._get_top_mastery)
+            future_hist = executor.submit(self._get_match_hist)
+
+            self.hist = future_hist.result()
+            self.mastery = future_mastery.result()
+            self.queues = future_queues.result()
 
         matches_count = len(self.hist)
-        self.avg_kills = sum([data.kills for data in self.hist]) / matches_count
-        self.avg_deaths = sum([data.deaths for data in self.hist]) / matches_count
-        self.avg_assists = sum([data.assists for data in self.hist]) / matches_count
+        total_kills = total_deaths = total_assists = 0
+
+        for data in self.hist:
+            total_kills += data.kills
+            total_deaths += data.deaths
+            total_assists += data.assists
+
+        self.avg_kills = total_kills / matches_count
+        self.avg_deaths = total_deaths / matches_count
+        self.avg_assists = total_assists / matches_count
 
     def _get_queues(self) -> List[LeagueEntry]:
-        queues_data_resp = api_get(
-            'br1', f'/lol/league/v4/entries/by-summoner/{self.summoner.summoner_id}'
-        )
+        queues_data_resp = api_get('br1', f'/lol/league/v4/entries/by-summoner/{self.summoner.summoner_id}')
         queues_data = queues_data_resp.json()
         queues = []
 
@@ -63,9 +74,7 @@ class Stats:
         return queues
 
     def _get_match_hist(self) -> List[SummonerMatchData]:
-        matches_resp = api_get(
-            'americas', f"/lol/match/v5/matches/by-puuid/{self.summoner.encrypted_puuid}/ids"
-        )
+        matches_resp = api_get('americas', f"/lol/match/v5/matches/by-puuid/{self.summoner.encrypted_puuid}/ids")
         match_ids = matches_resp.json()
 
         with ThreadPoolExecutor(max_workers=3) as executor:

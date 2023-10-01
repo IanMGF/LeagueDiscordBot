@@ -16,12 +16,8 @@ def request_match(tup):
     match_data = match_unit_resp.json()
 
     players = match_data['info']['participants']
-    target_player = None
-    for player in players:
-        if player['summonerId'] != summ_id:
-            continue
-        target_player = player
-        break
+    player_id_filter = filter(lambda player_data: player_data['summonerId'] == summ_id, players)
+    target_player = next(player_id_filter)  # Get a single player with the same summonerId (should be unique)
 
     return SummonerMatchData(
         kills=target_player['kills'],

@@ -29,8 +29,9 @@ def pull_summoner(summoner_name: str) -> Union[CachedSummonerWrapper, None]:
     # This is the only point Cache is ever altered, therefore, it is the only time in which it needs to be sanitized
     update_cache()
 
-    if summoner_name in CACHE.keys():
+    if summoner_name in CACHE:
         return CACHE[summoner_name]
+
     else:
         resp = api_get('br1', f"/lol/summoner/v4/summoners/by-name/{summoner_name}")
 

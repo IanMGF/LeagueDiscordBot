@@ -10,12 +10,8 @@ Line 1: Discord Bot Token
 Line 2: Riot API Token
 """
 
-import discord
-
 DISCORD_TOKEN = ""
 RIOT_TOKEN = ""
-
-RIOT_API_BASE = "https://br1.api.riotgames.com"
 
 
 def init_tokens():
@@ -26,3 +22,6 @@ def init_tokens():
         tokens = token_file.readlines()
         DISCORD_TOKEN = tokens[0]
         RIOT_TOKEN = tokens[1]
+
+
+init_tokens()

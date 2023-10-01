@@ -1,3 +1,4 @@
-CATOKENS.txt
+TOKENS.txt
 venv/*
 .idea/*
+dumps/*

@@ -5,7 +5,7 @@ from discord import Embed
 from league_api import CachedSummonerWrapper
 
 """
-Interface to convert data from League API to Discord objects, that can be displayed as an Embedded
+Interface to convert data from League API to Discord objects, that can be displayed as an Embed
 """
 
 
@@ -57,6 +57,7 @@ class SummonerDiscordDisplay:
                                       f'Derrotas: {queue.losses}\n',
                                 inline=False)
 
+        # Last profile modification
         embed.add_field(name="Última modificação no perfil", value=f"{last_profile_mod}", inline=False)
 
         embed.set_footer(

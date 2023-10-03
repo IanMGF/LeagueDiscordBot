@@ -1,6 +1,6 @@
 from time import strftime, localtime
 
-from discord import Embed, Message
+from discord import Embed
 
 from league_api import CachedSummonerWrapper
 

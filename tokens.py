@@ -20,8 +20,7 @@ def init_tokens() -> None:
         global RIOT_TOKEN
 
         tokens = token_file.readlines()
-        DISCORD_TOKEN = tokens[0]
-        RIOT_TOKEN = tokens[1]
+        DISCORD_TOKEN, RIOT_TOKEN = tokens
 
 
 init_tokens()

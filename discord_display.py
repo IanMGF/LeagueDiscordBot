@@ -14,7 +14,7 @@ class SummonerDiscordDisplay:
         self.cached_wrapper = cached_summoner
         self.summoner = cached_summoner.summoner
 
-    async def update_display(self, msg: Message):
+    def gen_embed(self) -> Embed:
         # revision_date is given in milliseconds, localtime takes seconds
         last_profile_mod = strftime('%H:%M do dia %d/%m/%Y', localtime(self.summoner.revision_date / 1000))
         last_load_time = self.cached_wrapper.cache_expiration_time.strftime('%H:%M:%S')
@@ -61,4 +61,4 @@ class SummonerDiscordDisplay:
             text=f"[Essas informações foram adquiridas pela API pública de League of Legends ({last_load_time})]"
         )
 
-        await msg.edit(content='', embed=embed)
+        return embed

@@ -14,7 +14,7 @@ DISCORD_TOKEN = ""
 RIOT_TOKEN = ""
 
 
-def init_tokens():
+def init_tokens() -> None:
     with open('TOKENS.txt', 'r') as token_file:
         global DISCORD_TOKEN
         global RIOT_TOKEN

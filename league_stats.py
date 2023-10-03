@@ -11,7 +11,7 @@ champion_data_list = champion_data_list['data']
 champion_by_key = {champion_data_list[champ_id]['key']: champion_data_list[champ_id] for champ_id in champion_data_list}
 
 
-def request_match(tup):
+def request_match(tup: Tuple[str, str]) -> SummonerMatchData:
     summ_id, m_id = tup
     match_unit_resp = api_get('americas', f'/lol/match/v5/matches/{m_id}?count=3')
     match_data = match_unit_resp.json()

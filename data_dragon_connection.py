@@ -6,6 +6,6 @@ game_versions = session.get('https://ddragon.leagueoflegends.com/api/versions.js
 game_version = game_versions[0]  # Get latest game version
 
 
-def get_file(filepath) -> Response:
+def get_file(filepath: str) -> Response:
     ddragon_url = f"https://ddragon.leagueoflegends.com/cdn/{game_version}/data/pt_BR/{filepath}"
     return session.get(ddragon_url)

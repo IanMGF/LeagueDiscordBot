@@ -1,6 +1,6 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Union
 
 import data_dragon_connection
 from abstract_league import Summoner, LeagueEntry, SummonerMatchData
@@ -52,8 +52,10 @@ class Stats:
         self.avg_deaths = total_deaths / matches_count
         self.avg_assists = total_assists / matches_count
 
-    def _get_queues(self) -> List[LeagueEntry]:
+    def _get_queues(self) -> Union[None, List[LeagueEntry]]:
         queues_data_resp = api_get('br1', f'/lol/league/v4/entries/by-summoner/{self.summoner.summoner_id}')
+        if queues_data_resp.status_code != 200:
+            return None
         queues_data = queues_data_resp.json()
         queues = []
 
@@ -73,8 +75,10 @@ class Stats:
 
         return queues
 
-    def _get_match_hist(self) -> List[SummonerMatchData]:
+    def _get_match_hist(self) -> Union[None, List[SummonerMatchData]]:
         matches_resp = api_get('americas', f"/lol/match/v5/matches/by-puuid/{self.summoner.encrypted_puuid}/ids")
+        if matches_resp.status_code != 200:
+            return None
         match_ids = matches_resp.json()
 
         with ThreadPoolExecutor(max_workers=3) as executor:
@@ -83,9 +87,12 @@ class Stats:
                                   )
             return list(future)
 
-    def _get_top_mastery(self) -> List[Tuple[str, int, int]]:
+    def _get_top_mastery(self) -> Union[None, List[Tuple[str, int, int]]]:
         puuid = self.summoner.encrypted_puuid
         response = api_get('br1', f'/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid}/top?count=3')
+        if response.status_code != 200:
+            return None
+
         response_data = response.json()
 
         mastery_list = []

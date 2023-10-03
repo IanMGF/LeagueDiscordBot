@@ -39,7 +39,7 @@ class SummonerDiscordDisplay:
         avg_deaths = summ_stats.avg_deaths
         avg_assists = summ_stats.avg_assists
         embed.add_field(name='K/D/A Médio',
-                        value=f'{avg_kills} / {avg_deaths} / {avg_assists}\n(Últimas 3 partidas)',
+                        value=f'{avg_kills} / {avg_deaths} / {avg_assists}\n(Últimas {len(summ_stats.hist)} partidas)',
                         inline=True)
 
         # Most mastery points
